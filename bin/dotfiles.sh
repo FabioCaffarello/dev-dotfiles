@@ -38,6 +38,7 @@ RIGHT_ANGLE="${GREEN}\xE2\x88\x9F${NC}"
 set -e
 
 # Paths
+ID=""
 DOTFILES_LOG="$HOME/.dotfiles.log"
 DOTFILES_DIR="$HOME/.dotfiles"
 SSH_DIR="$HOME/.ssh"
@@ -77,6 +78,45 @@ function _cmd {
   exit 1
 }
 
+update_ansible_galaxy() {
+  local os=$1
+  local os_requirements=""
+  __task "Updating Ansible Galaxy"
+  if [ -f "$DOTFILES_DIR/requirements/$os.yml" ]; then
+    __task "${OVERWRITE}Updating Ansible Galaxy with OS Config: $os"
+    os_requirements="$DOTFILES_DIR/requirements/$os.yml"
+  fi
+  _cmd "ansible-galaxy install -r $DOTFILES_DIR/requirements/common.yml $os_requirements"
+}
+
+function ubuntu_setup() {
+  if ! dpkg -s ansible >/dev/null 2>&1; then
+    __task "Installing Ansible"
+    _cmd "sudo apt-get update"
+    _cmd "sudo apt-get install -y software-properties-common"
+    _cmd "sudo apt-add-repository -y ppa:ansible/ansible"
+    _cmd "sudo apt-get update"
+    _cmd "sudo apt-get install -y ansible"
+    _cmd "sudo apt-get install python3-argcomplete"
+    _cmd "sudo activate-global-python-argcomplete3"
+  fi
+  if ! dpkg -s python3 >/dev/null 2>&1; then
+    __task "Installing Python3"
+    _cmd "sudo apt-get install -y python3"
+  fi
+
+  local UBUNTU_MAJOR_VERSION=$(echo $VERSION_ID | cut -d. -f1)
+  if [ $UBUNTU_MAJOR_VERSION -le 22 ]; then
+    if ! dpkg -s python3-pip >/dev/null 2>&1; then
+      __task "Installing Python3 Pip"
+      _cmd "sudo apt-get install -y python3-pip"
+    fi
+    if ! pip3 list | grep watchdog >/dev/null 2>&1; then
+      __task "Installing Python3 Watchdog"
+      _cmd "sudo apt-get install -y python3-watchdog"
+    fi
+  fi
+}
 
 function macos_setup() {
   if ! [ -x "$(command -v brew)" ]; then
@@ -105,6 +145,9 @@ detect_os() {
 dotfiles_os=$(detect_os)
 __task "Loading Setup for detected OS: $dotfiles_os"
 case $dotfiles_os in
+  ubuntu)
+    ubuntu_setup
+    ;;
   darwin)
     macos_setup
     ;;
@@ -122,6 +165,11 @@ if ! [[ -f "$SSH_DIR/authorized_keys" ]]; then
   _cmd "cat $SSH_DIR/id_ed25519_auth.pub >> $SSH_DIR/authorized_keys"
 fi
 
+if ! [[ -f "$SSH_DIR/known_hosts" ]]; then
+  __task "Generating SSH known_hosts"
+  _cmd "ssh-keyscan -H github.com >> $SSH_DIR/known_hosts"
+fi
+
 if ! [[ -d "$DOTFILES_DIR" ]]; then
   __task "Cloning repository"
   _cmd "git clone --quiet https://github.com/FabioCaffarello/dev-dotfiles.git $DOTFILES_DIR"
@@ -130,4 +178,19 @@ else
   _cmd "git -C $DOTFILES_DIR pull --quiet"
 fi
 
+pushd "$DOTFILES_DIR" 2>&1 > /dev/null
+update_ansible_galaxy $ID
+
+
+ansible-playbook "$DOTFILES_DIR/main.yml" "$@"
+
+popd 2>&1 > /dev/null
+
+if ! [[ -f "$IS_FIRST_RUN" ]]; then
+  echo -e "${CHECK_MARK} ${GREEN}First run complete!${NC}"
+  echo -e "${ARROW} ${CYAN}Please reboot your computer to complete the setup.${NC}"
+  touch "$IS_FIRST_RUN"
+fi
+
 echo "end"
+# vi:ft=sh:
