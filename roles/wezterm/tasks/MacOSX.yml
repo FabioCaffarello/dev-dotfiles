@@ -1,0 +1,11 @@
+- name: "WezTerm | {{ ansible_distribution }} | Check if WezTerm is installed"
+  ansible.builtin.command:
+    cmd: wezterm --version
+  register: wezterm_installed
+  changed_when: false
+  failed_when: false
+- name: "WezTerm | {{ ansible_distribution }} | Install WezTerm"
+  community.general.homebrew_cask:
+    name: wezterm
+    state: present
+  when: wezterm_installed.rc != 0

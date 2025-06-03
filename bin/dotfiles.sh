@@ -161,7 +161,8 @@ if ! [[ -f "$SSH_DIR/authorized_keys" ]]; then
   __task "Generating SSH keys"
   _cmd "mkdir -p $SSH_DIR"
   _cmd "chmod 700 $SSH_DIR"
-  _cmd "ssh-keygen -t ed25519 -f $SSH_DIR/id_ed25519_auth -N '' -C $USER@$HOSTNAME"
+  _cmd "ssh-keygen -t ed25519 -f $SSH_DIR/id_ed25519_auth -N '' -C fabio.caffarello@gmail.com"
+  # _cmd "ssh-keygen -t ed25519 -f $SSH_DIR/id_ed25519_auth -N '' -C $USER@$HOSTNAME"
   _cmd "cat $SSH_DIR/id_ed25519_auth.pub >> $SSH_DIR/authorized_keys"
 fi
 
@@ -170,13 +171,15 @@ if ! [[ -f "$SSH_DIR/known_hosts" ]]; then
   _cmd "ssh-keyscan -H github.com >> $SSH_DIR/known_hosts"
 fi
 
-if ! [[ -d "$DOTFILES_DIR" ]]; then
-  __task "Cloning repository"
-  _cmd "git clone --quiet https://github.com/FabioCaffarello/dev-dotfiles.git $DOTFILES_DIR"
-else
-  __task "Updating repository"
-  _cmd "git -C $DOTFILES_DIR pull --quiet"
-fi
+# if ! [[ -d "$DOTFILES_DIR" ]]; then
+#   __task "Cloning repository"
+#   _cmd "git config --global user.name 'Fabio Caffarello'"
+#   _cmd "git config --global user.email 'fabio.caffarello@gmail.com'"
+#   _cmd "git clone --quiet https://github.com/FabioCaffarello/dev-dotfiles.git $DOTFILES_DIR"
+# else
+#   __task "Updating repository"
+#   _cmd "git -C $DOTFILES_DIR pull --quiet"
+# fi
 
 pushd "$DOTFILES_DIR" 2>&1 > /dev/null
 update_ansible_galaxy $ID
@@ -192,5 +195,4 @@ if ! [[ -f "$IS_FIRST_RUN" ]]; then
   touch "$IS_FIRST_RUN"
 fi
 
-echo "end"
 # vi:ft=sh:

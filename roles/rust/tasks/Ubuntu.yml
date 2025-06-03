@@ -1,0 +1,43 @@
+- name: check if cargo is installed
+  ansible.builtin.shell:
+    cmd: command -v cargo
+  register: cargo_exists
+  ignore_errors: yes
+- name: "Install Rust and Cargo if not installed"
+  when: cargo_exists.failed
+  block:
+    - name: Download Installer
+      when: cargo_exists is failed
+      get_url:
+        url: https://sh.rustup.rs
+        dest: /tmp/sh.rustup.rs
+        mode: '0755'
+        force: 'yes'
+      tags:
+        - rust
+    - name: install rust/cargo
+      when: cargo_exists is failed
+      shell: /tmp/sh.rustup.rs -y
+      tags:
+        - rust
+    - name: "Rust | Install Rust components"
+      ansible.builtin.shell:
+        cmd: "bash -l -c 'source $HOME/.cargo/env && rustup component add {{ item }}'"
+      loop:
+        - rustfmt
+        - clippy
+      become: true
+      environment:
+        HOME: "{{ ansible_env.HOME }}"
+    - name: "Rust | Update Rust toolchain"
+      ansible.builtin.shell:
+        cmd: "bash -l -c 'source $HOME/.cargo/env && rustup update'"
+      become: true
+      environment:
+        HOME: "{{ ansible_env.HOME }}"
+- name: "Ensure cargo is available in PATH"
+  ansible.builtin.shell:
+    cmd: "echo 'export PATH=$HOME/.cargo/bin:$PATH' >> $HOME/.bashrc && bash -l -c 'source $HOME/.bashrc'"
+  become: true
+  environment:
+    HOME: "{{ ansible_env.HOME }}"

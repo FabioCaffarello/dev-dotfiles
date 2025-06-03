@@ -1,0 +1,26 @@
+- name: "WezTerm | {{ ansible_distribution}} | Add WezTerm GPG key"
+  ansible.builtin.shell:
+    cmd: "curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg"
+  become: true
+  notify:
+    - Update apt cache # Chama o handler para atualizar o cache
+- name: "WezTerm | {{ ansible_distribution}} | Add WezTerm APT repository"
+  ansible.builtin.shell:
+    cmd: "echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list"
+  become: true
+  notify:
+    - Update apt cache
+- name: "WezTerm | {{ ansible_distribution}} | Ensure WezTerm GPG key file has correct permissions"
+  ansible.builtin.file:
+    path: "/usr/share/keyrings/wezterm-fury.gpg"
+    mode: "0644"
+  become: true
+- name: "WezTerm | {{ ansible_distribution}} | Ensure WezTerm APT repository file has correct permissions"
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+- name: "WezTerm | {{ ansible_distribution}} | Install WezTerm"
+  ansible.builtin.apt:
+    name: wezterm
+    state: present
+  become: true

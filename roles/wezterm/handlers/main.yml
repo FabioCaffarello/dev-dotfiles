@@ -1,0 +1,15 @@
+- name: "Update apt cache"
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+- name: "Restart WezTerm service"
+  ansible.builtin.systemd:
+    name: wezterm
+    state: restarted
+  become: true
+  when: ansible_distribution == 'Ubuntu'
+- name: "Cleanup WezTerm temporary files"
+  ansible.builtin.file:
+    path: "/tmp/wezterm"
+    state: absent
+  become: true

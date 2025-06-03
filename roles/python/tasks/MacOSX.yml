@@ -1,0 +1,15 @@
+- name: "Python | MacOSX | Install Python"
+  community.general.homebrew:
+    name: python
+    state: present
+- name: "Python | MacOSX | Ensure pip is installed"
+  ansible.builtin.shell:
+    cmd: "python3 -m ensurepip --upgrade"
+    creates: "/usr/local/bin/pip3"
+  become: true
+- name: "Python | MacOSX | Install pip packages"
+  ansible.builtin.pip:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - poetry==1.8.5

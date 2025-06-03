@@ -1,2 +1,35 @@
 default_roles:
+  - bat
+  - docker
+  - fonts
   - fzf
+  - gh
+  - go
+  - helm
+  - k8s
+  - k9s
+  - lazydocker
+  - lazygit
+  - lua
+  - neovim
+  - npm
+  - nvm
+  - obsidian
+  - python
+  - raycast
+  - rust
+  - spotify
+  - system
+  - terraform
+  - tmux
+  - wezterm
+  - zoxide
+  - zsh
+  - yazi
+k8s:
+  repo:
+    version: "v1.29"
+helm:
+  repos:
+    - name: traefik
+      url: https://helm.traefik.io/traefik

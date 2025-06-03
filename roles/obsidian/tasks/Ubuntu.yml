@@ -1,0 +1,16 @@
+- name: Obsidian | Detect if Desktop Environment"
+  ansible.builtin.set_fact:
+    ansible_host_is_desktop_environment: "{{ lookup('env', 'XDG_CURRENT_DESKTOP') }}"
+- name: "Obsidian | Install"
+  community.general.flatpak:
+    name: "md.obsidian.Obsidian"
+    state: present
+  when:
+    - not ansible_host_environment_is_wsl
+    - ansible_host_is_desktop_environment | bool
+
+# - name: "Obsidian | Clone Obsidian Git Repo"
+#   ansible.builtin.git:
+#     repo: "git@github.com:FabioCaffarello/DataArch-Vault.git"
+#     dest: "{{ ansible_user_dir }}/DataArch-Vault"
+#   failed_when: false # This only really needs to be run once, ever.

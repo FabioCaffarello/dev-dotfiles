@@ -5,4 +5,3 @@ services:
       dockerfile: Dockerfile
     container_name: devbox
     command: ["tail", "-f", "/dev/null"]
-    hostname: devbox

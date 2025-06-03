@@ -50,3 +50,7 @@ COPY --chown=${USER}:${group} . /home/${USER}/.dotfiles
 # CMD []
 #
 # ENTRYPOINT ["/bin/bash"]
+
+ENV USER=${USER}
+
+WORKDIR /home/${USER}/.dotfiles

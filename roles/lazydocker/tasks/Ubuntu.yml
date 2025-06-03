@@ -1,0 +1,67 @@
+- name: "LAZYDOCKER | Download Latest Version JSON"
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/jesseduffield/lazydocker/releases/latest
+  register: lazydocker_latest_version_json
+  changed_when: false
+  failed_when: false
+- name: "LAZYDOCKER | Registering lazydocker Latest Release"
+  ansible.builtin.set_fact:
+    lazydocker_latest_release: "{{ lazydocker_latest_version_json.json.tag_name }}"
+- name: "LAZYDOCKER | Getting version information"
+  ansible.builtin.shell:
+    cmd: lazydocker --version | grep -oP 'version=\K[^,]+' | awk 'NR==1' | sed 's/^/v/'
+  register: current_lazydocker_version
+  changed_when: false
+  failed_when: false
+- name: "LAZYDOCKER | Show current_lazydocker_version debug"
+  ansible.builtin.debug:
+    var: current_lazydocker_version.stdout
+- name: "LAZYDOCKER | Show lazydocker_latest_release debug"
+  ansible.builtin.debug:
+    var: lazydocker_latest_release
+- name: "LAZYDOCKER | Install"
+  when: lazydocker_latest_release not in current_lazydocker_version.stdout | default('')
+  block:
+    - name: "LAZYDOCKER | Define lazydocker_file"
+      ansible.builtin.set_fact:
+        lazydocker_file: "lazydocker_{{ lazydocker_latest_release | regex_replace('^v', '') }}_Linux_x86_64"
+    - name: "LAZYDOCKER | Ensure clean download destination"
+      ansible.builtin.file:
+        path: "/tmp/{{ lazydocker_file }}.tar.gz"
+        state: absent
+      become: true
+    - name: "LAZYDOCKER | Downloading lazydocker Release"
+      ansible.builtin.get_url:
+        url: "https://github.com/jesseduffield/lazydocker/releases/download/{{ lazydocker_latest_release }}/{{ lazydocker_file }}.tar.gz"
+        dest: /tmp/
+        mode: "0644"
+        force: true
+      notify:
+        - Cleanup lazydocker downloaded tar
+    - name: "LAZYDOCKER | Ensure clean extraction destination"
+      ansible.builtin.file:
+        path: "/tmp/lazydocker"
+        state: absent
+      become: true
+    - name: "LAZYDOCKER | Extract lazydocker tar file"
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ lazydocker_file }}.tar.gz"
+        dest: /tmp
+      become: true
+    - name: "LAZYDOCKER | Remove any current lazydocker installations"
+      ansible.builtin.file:
+        path: /usr/local/bin/lazydocker
+        state: absent
+      become: true
+    - name: "LAZYDOCKER | Install lazydocker"
+      ansible.builtin.copy:
+        remote_src: true
+        src: /tmp/lazydocker
+        dest: /usr/local/bin/
+        owner: "{{ ansible_env.USER }}"
+        group: "{{ ansible_env.USER }}"
+        force: true
+        mode: "0755"
+      become: true
+      notify:
+        - Remove extracted lazydocker directory
