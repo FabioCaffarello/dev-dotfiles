@@ -2,14 +2,23 @@
   community.general.homebrew:
     name: python
     state: present
-- name: "Python | MacOSX | Ensure pip is installed"
-  ansible.builtin.shell:
-    cmd: "python3 -m ensurepip --upgrade"
-    creates: "/usr/local/bin/pip3"
-  become: true
-- name: "Python | MacOSX | Install pip packages"
-  ansible.builtin.pip:
-    name: "{{ item }}"
+- name: "Python | MacOSX | Ensure pipx is installed"
+  community.general.homebrew:
+    name: pipx
     state: present
-  loop:
-    - poetry==1.8.5
+- name: "Python | MacOSX | Ensure pipx binary is in PATH"
+  ansible.builtin.command: pipx ensurepath
+  environment:
+    PATH: "/opt/homebrew/bin:{{ ansible_env.PATH }}"
+- name: "Python | MacOSX | Install Poetry with pipx"
+  ansible.builtin.command: pipx install poetry==1.8.5
+  environment:
+    PATH: "/opt/homebrew/bin:{{ ansible_env.PATH }}"
+  args:
+    creates: "{{ ansible_env.HOME }}/.local/pipx/venvs/poetry"
+# - name: "Python | MacOSX | Install pip packages"
+#   ansible.builtin.pip:
+#     name: "{{ item }}"
+#     state: present
+#   loop:
+#     - poetry==1.8.5

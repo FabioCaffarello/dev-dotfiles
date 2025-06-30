@@ -1,0 +1,4 @@
+- name: "NoMachine| MacOSX | Install NoMachine"
+  community.general.homebrew_cask:
+    name: nomachine
+    state: present

@@ -10,6 +10,13 @@
     - jq
     - tree
     - ripgrep
-
-
-    brew install yazi ffmpeg sevenzip jq poppler fd ripgrep fzf zoxide resvg imagemagick font-symbols-only-nerd-font
+    - yazi 
+    - ffmpeg
+    - sevenzip
+    - poppler
+    - fd
+    - resvg
+    - imagemagick
+    - font-symbols-only-nerd-font
+    - tlrc
+    - thefuck

@@ -12,8 +12,14 @@
     mode: '0644'
     directory_mode: "0755"
     force: true
-    owner: "{{ ansible_env.USER }}" # Garantir que o arquivo seja do usuário correto
-    group: "{{ ansible_env.USER }}"
+- name: "Yazi | Check if flavor already exists"
+  ansible.builtin.stat:
+    path: "{{ ansible_user_dir }}/.config/yazi/flavors/catppuccin-mocha.yazi/flavor.toml"
+  register: yazi_flavor_check
+- name: "Yazi | Install Catppuccin flavor via ya pkg"
+  ansible.builtin.command:
+    cmd: ya pkg add yazi-rs/flavors:catppuccin-mocha
+  when: not yazi_flavor_check.stat.exists
 - name: "Yazi | Verify installation"
   ansible.builtin.command:
     cmd: yazi --version

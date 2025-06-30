@@ -57,23 +57,23 @@ function __task {
 # _cmd performs commands with error checking
 function _cmd {
   #create log if it doesn't exist
-  if ! [[ -f $DOTFILES_LOG ]]; then
-    touch $DOTFILES_LOG
+  if ! [[ -f "$DOTFILES_LOG" ]]; then
+    touch "$DOTFILES_LOG"
   fi
   # empty conduro.log
-  > $DOTFILES_LOG
+  > "$DOTFILES_LOG"
   # hide stdout, on error we print and exit
-  if eval "$1" 1> /dev/null 2> $DOTFILES_LOG; then
+  if eval "$1" 1> /dev/null 2> "$DOTFILES_LOG"; then
     return 0 # success
   fi
   # read error from log and add spacing
   printf "${OVERWRITE}${LRED} [X]  ${TASK}${LRED}\n"
-  while read line; do
+  while IFS= read -r line; do
     printf "      ${line}\n"
-  done < $DOTFILES_LOG
+  done < "$DOTFILES_LOG"
   printf "\n"
   # remove log file
-  rm $DOTFILES_LOG
+  rm -f "$DOTFILES_LOG"
   # exit installation
   exit 1
 }
@@ -86,7 +86,7 @@ update_ansible_galaxy() {
     __task "${OVERWRITE}Updating Ansible Galaxy with OS Config: $os"
     os_requirements="$DOTFILES_DIR/requirements/$os.yml"
   fi
-  _cmd "ansible-galaxy install -r $DOTFILES_DIR/requirements/common.yml $os_requirements"
+  _cmd "ansible-galaxy install -r \"$DOTFILES_DIR/requirements/common.yml\" \"$os_requirements\""
 }
 
 function ubuntu_setup() {
@@ -185,7 +185,7 @@ pushd "$DOTFILES_DIR" 2>&1 > /dev/null
 update_ansible_galaxy $ID
 
 
-ansible-playbook "$DOTFILES_DIR/main.yml" "$@"
+ansible-playbook "$DOTFILES_DIR/main.yml" "$@" 
 
 popd 2>&1 > /dev/null
 
