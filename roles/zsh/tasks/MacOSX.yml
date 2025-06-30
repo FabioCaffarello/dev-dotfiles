@@ -1,11 +1,12 @@
 - name: "Zsh | MacOSX | Install"
   community.general.homebrew:
-    name: "{{ item }}"
+    name: zsh
     state: present
-  loop:
-    - zsh
-- name: "Zsh | Set default terminal"
-  ansible.builtin.user:
-    name: "{{ host_user }}"
-    shell: /opt/homebrew/bin/zsh
-  become: true
+- name: "Zinit | MacOSX | Install"
+  community.general.homebrew:
+    name: zinit
+    state: present
+- name: "Zsh | MacOSX | Get current shell"
+  ansible.builtin.command: dscl . -read /Users/{{ ansible_env.USER }} UserShell
+  register: current_shell
+  changed_when: false

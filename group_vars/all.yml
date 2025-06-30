@@ -1,17 +1,21 @@
 default_roles:
   - bat
   - docker
+  - eza
   - fonts
   - fzf
   - gh
   - go
   - helm
+  - karabiner
   - k8s
   - k9s
   - lazydocker
   - lazygit
   - lua
   - neovim
+  # - nomachine
+  - nordvpn
   - npm
   - nvm
   - obsidian

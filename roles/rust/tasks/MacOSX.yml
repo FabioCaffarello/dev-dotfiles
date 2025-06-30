@@ -1,42 +1,23 @@
 - name: "Rust | Install Rustup"
   ansible.builtin.shell:
-    cmd: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
-  become: true
+    cmd: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
   args:
-    creates: "/usr/local/bin/rustup"
-- name: "Rust | MacOSX | Install Rust via Homebrew"
-  community.general.homebrew:
-    name: rust
-    state: present
-  when: ansible_distribution == 'Darwin'
+    creates: "{{ ansible_env.HOME }}/.cargo/bin/rustup"
+  environment:
+    CARGO_HOME: "{{ ansible_env.HOME }}/.cargo"
+    RUSTUP_HOME: "{{ ansible_env.HOME }}/.rustup"
+    HOME: "{{ ansible_env.HOME }}"
 - name: "Rust | Install Rust components"
-  ansible.builtin.shell:
-    cmd: "source $HOME/.cargo/env && rustup component add {{ item }}"
+  ansible.builtin.shell: >
+    bash -l -c "source \"$HOME/.cargo/env\" && rustup component add {{ item }}"
   loop:
     - rustfmt
     - clippy
-  become: true
   environment:
     HOME: "{{ ansible_env.HOME }}"
 - name: "Rust | Update Rust toolchain"
-  ansible.builtin.shell:
-    cmd: "source $HOME/.cargo/env && rustup update"
-  become: true
+  ansible.builtin.shell: >
+    bash -l -c "source \"$HOME/.cargo/env\" && rustup update"
   environment:
     HOME: "{{ ansible_env.HOME }}"
 
-# - name: "Rust | MacOSX | Install Rust via Homebrew"
-#   community.general.homebrew:
-#     name: rust
-#     state: present
-# - name: "Rust | MacOSX | Install Rust components"
-#   ansible.builtin.shell:
-#     cmd: "rustup component add {{ item }}"
-#   loop:
-#     - rustfmt
-#     - clippy
-#   become: true
-# - name: "Rust | MacOSX | Update Rust toolchain"
-#   ansible.builtin.shell:
-#     cmd: "rustup update"
-#   become: true

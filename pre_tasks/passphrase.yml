@@ -1,0 +1,7 @@
+- name: Register Passphrase 
+  ansible.builtin.set_fact:
+    passphrase: "{{ lookup('env', 'DOTFILES_PASSPHRASE') }}"
+- name: Debug passphrase presence
+  ansible.builtin.debug:
+    msg: "DOTFILES_PASSPHRASE is set"
+  when: passphrase is defined and passphrase != ''

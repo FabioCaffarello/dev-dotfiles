@@ -1,20 +1,29 @@
-- name: "K9s | MacOSX | Install k9s"
-  community.general.homebrew:
-    name: k9s
-    state: present
-- name: "K9s | Copy config"
+- name: "K9s | Ensure base config directory exists"
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/Library/Application Support/k9s"
+    state: directory
+    mode: "0755"
+    recurse: true
+
+- name: "K9s | Ensure skins directory exists"
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/Library/Application Support/k9s/skins"
+    state: directory
+    mode: "0755"
+
+- name: "K9s | Copy all base configs"
   ansible.builtin.copy:
-    dest: "{{ ansible_user_dir }}/Library/Application Support/k9s/{{ item }}"
     src: "{{ item }}"
+    dest: "{{ ansible_user_dir }}/Library/Application Support/k9s/{{ item | basename }}"
     mode: "0644"
-  loop:
-    - config.yaml
-    - plugins.yaml
-    - aliases.yaml
-- name: "K9s | Copy skin config"
+  with_fileglob:
+    - "{{ role_path }}/files/*.yaml"
+
+- name: "K9s | Copy skins"
   ansible.builtin.copy:
-    dest: "{{ ansible_user_dir }}/Library/Application Support/k9s/skins/{{ item }}"
     src: "{{ item }}"
+    dest: "{{ ansible_user_dir }}/Library/Application Support/k9s/skins/{{ item | basename }}"
     mode: "0644"
-  loop:
-    - catppuccin_mocha.yaml
+  with_fileglob:
+    - "{{ role_path }}/files/skins/*.yaml"
+

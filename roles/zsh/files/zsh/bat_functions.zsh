@@ -19,3 +19,13 @@ function btail() {
   # tail -f $@ | bat -P -l log # This is the short version
   tail -f $@ | bat --paging=never --language=log
 }
+
+function batdiff() {
+    git diff --name-only --relative --diff-filter=d | xargs bat --diff
+}
+
+alias bathelp='bat --plain --language=help'
+help() {
+    "$@" --help 2>&1 | bathelp
+}
+
