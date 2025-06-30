@@ -2,19 +2,11 @@
   community.general.homebrew:
     name: zsh
     state: present
+- name: "Zinit | MacOSX | Install"
+  community.general.homebrew:
+    name: zinit
+    state: present
 - name: "Zsh | MacOSX | Get current shell"
   ansible.builtin.command: dscl . -read /Users/{{ ansible_env.USER }} UserShell
   register: current_shell
   changed_when: false
-# - name: "Zsh | MacOSX | Ensure zsh is listed in /etc/shells"
-#   ansible.builtin.lineinfile:
-#     path: /etc/shells
-#     line: /opt/homebrew/bin/zsh
-#     state: present
-#   become: true
-# - name: "Zsh | MacOSX | Set default shell to Homebrew zsh if not already"
-#   ansible.builtin.user:
-#     name: "{{ ansible_env.USER }}"
-#     shell: /opt/homebrew/bin/zsh
-#   become: true
-#   when: "/opt/homebrew/bin/zsh not in current_shell.stdout"
