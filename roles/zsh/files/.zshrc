@@ -24,6 +24,15 @@ fi
 autoload -U +X bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 
+# Zinit initialization
+if [[ ! -f ~/.zinit/bin/zinit.zsh ]]; then
+  echo "Zinit not found. Installing..."
+  mkdir -p ~/.zinit/bin
+  git clone https://github.com/zdharma-continuum/zinit ~/.zinit/bin
+fi
+
+source ~/.zinit/bin/zinit.zsh
+
 zinit cdreplay -q
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.

@@ -1,5 +1,5 @@
 - name: "Docker | MacOSX | Install Docker"
-  community.general.homebrew:
+  community.general.homebrew_cask:
     name: docker
     state: present
 
