@@ -17,6 +17,6 @@
     - fd
     - resvg
     - imagemagick
-    - font-symbols-only-nerd-font
+#    - font-symbols-only-nerd-font
     - tlrc
     - thefuck

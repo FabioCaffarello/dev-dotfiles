@@ -1,0 +1,60 @@
+# - name: "OpenCode | macOS | Ensure tap (optional)"
+#   community.general.homebrew_tap:
+#     name: opencode/opencode
+#     state: present
+#   become: false
+#   ignore_errors: true
+#   tags: [opencode]
+#
+- name: "OpenCode | macOS | Install opencode"
+  community.general.homebrew:
+    name: opencode
+    state: present
+  become: false
+  environment:
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+    HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: "1"
+  tags: [opencode]
+
+- name: "OpenCode | macOS | Ensure ~/.config/opencode dir"
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/.config/opencode"
+    state: directory
+    mode: "0755"
+  become: false
+  tags: [opencode]
+
+- name: "OpenCode | macOS | Ensure ~/.config/opencode/themes dir"
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/.config/opencode/themes"
+    state: directory
+    mode: "0755"
+  become: false
+  tags: [opencode]
+
+- name: "OpenCode | macOS | Copy custom themes"
+  ansible.builtin.copy:
+    src: "themes/"
+    dest: "{{ ansible_user_dir }}/.config/opencode/themes/"
+    mode: "0644"
+  become: false
+  tags: [opencode]
+
+- name: "OpenCode | macOS | Render config.json"
+  ansible.builtin.template:
+    src: "config.json.j2"
+    dest: "{{ ansible_user_dir }}/.config/opencode/config.json"
+    mode: "0644"
+    backup: true
+  become: false
+  notify: restart_opencode
+  tags: [opencode]
+
+# (Opcional) validação do JSON se 'jq' existir
+- name: "OpenCode | macOS | Validate config with jq (optional)"
+  ansible.builtin.shell: |
+    command -v jq >/dev/null 2>&1 && jq . {{ ansible_user_dir }}/.config/opencode/config.json >/dev/null || true
+  args: { executable: /bin/bash }
+  changed_when: false
+  become: false
+  tags: [opencode]

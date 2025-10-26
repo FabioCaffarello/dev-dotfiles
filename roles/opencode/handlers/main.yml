@@ -1,0 +1,3 @@
+- name: restart_opencode
+  ansible.builtin.debug:
+    msg: "Config do OpenCode atualizado (macOS). Nenhuma ação adicional necessária."

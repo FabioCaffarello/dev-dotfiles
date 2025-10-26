@@ -1,0 +1,8 @@
+opencode_theme: "coolnight"
+# Config extra (merge recursivo com o base)
+opencode_config_extra: {}
+# Exemplo:
+# opencode_config_extra:
+#   telemetry: false
+#   editor:
+#     fontSize: 14

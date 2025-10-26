@@ -1,0 +1,6 @@
+{%- set base = {
+  "$schema": "https://opencode.ai/config.json",
+  "theme": opencode_theme
+} -%}
+{%- set cfg = base | combine(opencode_config_extra, recursive=True) -%}
+{{ cfg | to_nice_json(indent=2) }}
