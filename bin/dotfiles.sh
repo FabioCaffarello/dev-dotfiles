@@ -173,7 +173,7 @@ if ! [[ -f "$SSH_DIR/authorized_keys" ]]; then
   _cmd "chmod 700 $SSH_DIR"
   _cmd "ssh-keygen -t ed25519 -f $SSH_DIR/id_ed25519_auth -N '' -C $SSH_EMAIL"
   _cmd "cat $SSH_DIR/id_ed25519_auth.pub >> $SSH_DIR/authorized_keys"
-  _cmd "ssh-add $SSH_DIR/id25519_auth"
+  _cmd "ssh-add $SSH_DIR/id_ed25519_auth"
 fi
 
 if ! [[ -f "$SSH_DIR/known_hosts" ]]; then
