@@ -13,6 +13,9 @@ return {
       -- TODO: Change to use ruff
       python = { "pylint" },
       terraform = { "tflint" },
+      -- Go (uses golangci-lint which includes multiple linters)
+      go = { "golangcilint" },
+      -- Rust uses clippy via rust-analyzer (checkOnSave), no separate linter needed
     }
 
     local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })

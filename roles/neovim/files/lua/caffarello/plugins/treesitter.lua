@@ -44,6 +44,10 @@ return {
         "c",
         "python",
         "go",
+        "gomod",
+        "gosum",
+        "rust",
+        "toml",
       },
       incremental_selection = {
         enable = true,

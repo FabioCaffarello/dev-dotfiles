@@ -15,13 +15,17 @@ return {
         html = { "prettier" },
         json = { "prettier" },
         yaml = { "yamlfmt" },
-        -- toml = { "taplo" },
+        toml = { "taplo" },
         markdown = { "prettier" },
         graphql = { "prettier" },
         liquid = { "prettier" },
         lua = { "stylua" },
         python = { "isort", "black" },
         terraform = { "terraform_fmt" },
+        -- Go
+        go = { "goimports-reviser", "gofumpt" },
+        -- Rust (uses LSP - rust-analyzer handles formatting)
+        rust = { "rustfmt", lsp_format = "fallback" },
       },
       formaters = {
         prettier_json = {

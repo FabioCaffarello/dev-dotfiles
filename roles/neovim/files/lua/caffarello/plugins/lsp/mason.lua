@@ -27,7 +27,7 @@ return {
     mason_lspconfig.setup({
       -- list of servers for mason to install
       ensure_installed = {
-        "tsserver",
+        "ts_ls",
         "html",
         "cssls",
         "tailwindcss",
@@ -37,7 +37,11 @@ return {
         "emmet_ls",
         "prismals",
         "pyright",
-        "terraform-ls",
+        "terraformls",
+        -- Go
+        "gopls",
+        -- Rust
+        "rust_analyzer",
       },
     })
 
@@ -49,6 +53,15 @@ return {
         "black", -- python formatter
         "pylint", -- python linter
         "eslint_d", -- js linter
+        -- Go tools
+        "gofumpt", -- go formatter (better than gofmt)
+        "goimports-reviser", -- go imports organizer
+        "golangci-lint", -- go linter
+        "delve", -- go debugger
+        -- Rust tools
+        "codelldb", -- rust/c/c++ debugger
+        -- Node.js tools
+        "js-debug-adapter", -- node.js debugger
       },
     })
   end,

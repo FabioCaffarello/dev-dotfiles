@@ -131,6 +131,44 @@ return {
           },
         })
       end,
+      ["gopls"] = function()
+        -- configure go server
+        lspconfig["gopls"].setup({
+          capabilities = capabilities,
+          settings = {
+            gopls = {
+              analyses = {
+                unusedparams = true,
+                shadow = true,
+              },
+              staticcheck = true,
+              gofumpt = true,
+              usePlaceholders = true,
+              completeUnimported = true,
+            },
+          },
+        })
+      end,
+      ["rust_analyzer"] = function()
+        -- configure rust server
+        lspconfig["rust_analyzer"].setup({
+          capabilities = capabilities,
+          settings = {
+            ["rust-analyzer"] = {
+              cargo = {
+                allFeatures = true,
+                loadOutDirsFromCheck = true,
+              },
+              checkOnSave = {
+                command = "clippy",
+              },
+              procMacro = {
+                enable = true,
+              },
+            },
+          },
+        })
+      end,
     })
   end,
 }
